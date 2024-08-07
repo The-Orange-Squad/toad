@@ -6,8 +6,8 @@ class QuestionManager:
     def __init__(self):
         self.truths = []
         self.dares = []
-        self.last_truths = []
-        self.last_dares = []
+        self.used_truths = set()
+        self.used_dares = set()
         self.load_questions()
 
     def load_questions(self):
@@ -32,19 +32,28 @@ class QuestionManager:
 
     def get_question(self, question_type, max_rating):
         questions = self.truths if question_type == 'truth' else self.dares
-        last_questions = self.last_truths if question_type == 'truth' else self.last_dares
+        used_questions = self.used_truths if question_type == 'truth' else self.used_dares
 
         eligible_questions = [q for q in questions if int(q['maxrating']) <= max_rating]
-        for question in eligible_questions:
-            if question not in last_questions:
-                last_questions.append(question)
-                if len(last_questions) > 5:
-                    last_questions.pop(0)
-                return question
+        
+        if not eligible_questions:
+            return None  # No eligible questions available
 
-        # If all questions have been used recently, reset the last questions list
-        last_questions.clear()
-        return random.choice(eligible_questions)
+        unused_questions = [q for q in eligible_questions if q['ID'] not in used_questions]
+
+        if not unused_questions:
+            # All questions have been used, reset the used questions set
+            used_questions.clear()
+            unused_questions = eligible_questions
+
+        selected_question = random.choice(unused_questions)
+        used_questions.add(selected_question['ID'])
+
+        # If all questions have been used, reset the used questions set
+        if len(used_questions) == len(eligible_questions):
+            used_questions.clear()
+
+        return selected_question
 
     def get_random_question(self, max_rating):
         question_type = random.choice(['truth', 'dare'])
