@@ -48,6 +48,7 @@ async def handle_command(ctx, command_type, question_manager):
 
     embed = discord.Embed(title=question['question'], color=discord.Color.blue())
     embed.set_footer(text=f"TYPE: {question_type} | RATING: {question['maxrating']} | ID: {question['ID']}")
+    embed.set_author(name=f"Requested by {ctx.author.display_name}", icon_url=ctx.author.avatar.url if ctx.author.avatar else None)
 
-    view = TruthDareView(question_manager, max_rating)
+    view = TruthDareView(question_manager, max_rating, ctx.author)
     await ctx.respond(embed=embed, view=view)
