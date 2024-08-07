@@ -39,6 +39,15 @@ async def handle_command(ctx, command_type, question_manager):
         await ctx.respond("You don't have permission to access 18+ questions in this channel.", ephemeral=True)
         return
 
+    if command_type == 'random':
+        question = question_manager.get_random_question(max_rating)
+        question_type = 'TRUTH' if question in question_manager.truths else 'DARE'
+    else:
+        question = question_manager.get_question(command_type, max_rating)
+        question_type = command_type.upper()
+
+    embed = discord.Embed(title=question['question'], color=discord.Color.blue())
+    embed.set_footer(text=f"TYPE: {question_type} | RATING: {question['maxrating']} | ID: {question['ID']}")
+
     view = TruthDareView(question_manager, max_rating)
-    embed = discord.Embed(title="Truth or Dare?", description="Choose your fate!", color=discord.Color.blue())
     await ctx.respond(embed=embed, view=view)
