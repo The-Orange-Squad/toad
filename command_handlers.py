@@ -27,6 +27,18 @@ def setup_commands(bot, question_manager, db_manager):
         db_manager.set_user_rating(ctx.author.id, rating)
         await ctx.respond(f"Your maximum rating has been set to {rating}.", ephemeral=True)
 
+    @bot.slash_command(name="view_rating", description="View your or another user's maximum rating")
+    async def view_rating(ctx, user: discord.Member = None):
+        target_user = user or ctx.author
+        rating = db_manager.get_user_rating(target_user.id)
+
+        if rating is None:
+            response = f"{target_user.display_name} hasn't set a maximum rating yet. The default rating of 13 will be used."
+        else:
+            response = f"{target_user.display_name}'s maximum rating is set to {rating}."
+
+        await ctx.respond(response, ephemeral=True)
+
 async def handle_command(ctx, command_type, question_manager, db_manager):
     max_rating = db_manager.get_user_rating(ctx.author.id) or 13  # Default to 13 if not set
 
@@ -48,5 +60,5 @@ async def handle_command(ctx, command_type, question_manager, db_manager):
     embed.set_footer(text=f"TYPE: {question_type} | RATING: {question['maxrating']} | ID: {question['ID']}")
     embed.set_author(name=f"Requested by {ctx.author.display_name}", icon_url=ctx.author.avatar.url if ctx.author.avatar else None)
 
-    view = TruthDareView(question_manager, max_rating, ctx.author)
+    view = TruthDareView(question_manager, db_manager, ctx.author)
     await ctx.respond(embed=embed, view=view)
