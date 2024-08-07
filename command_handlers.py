@@ -42,7 +42,7 @@ def setup_commands(bot, question_manager, db_manager):
 async def handle_command(ctx, command_type, question_manager, db_manager):
     max_rating = db_manager.get_user_rating(ctx.author.id) or 13  # Default to 13 if not set
 
-    if max_rating > 18 and not (
+    if max_rating >= 18 and not (
         any(role.id in special_role_ids for role in ctx.author.roles) and
         ctx.channel.id in special_channel_ids
     ):
