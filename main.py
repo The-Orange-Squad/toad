@@ -2,22 +2,22 @@ import os
 from dotenv import load_dotenv
 import discord
 from discord.ext import commands
-import csv
-import random
-import uuid
 from question_manager import QuestionManager
 from ui_components import TruthDareView
 from command_handlers import setup_commands
 from database_manager import DatabaseManager
+from submission_manager import SubmissionManager, setup_submission_commands
 
 load_dotenv()
 TOKEN = os.getenv('token')
+MOD_CHANNEL_ID = int(os.getenv('modchannelid'))
 
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 question_manager = QuestionManager()
 db_manager = DatabaseManager()
+submission_manager = SubmissionManager()
 
 @bot.event
 async def on_ready():
@@ -25,5 +25,6 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(name="Truth or Dare"))
 
 setup_commands(bot, question_manager, db_manager)
+setup_submission_commands(bot, submission_manager, question_manager)
 
 bot.run(TOKEN)
