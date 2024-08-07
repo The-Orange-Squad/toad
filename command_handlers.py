@@ -2,8 +2,8 @@ import discord
 from discord.ext import commands
 from ui_components import TruthDareView
 
-special_role_ids = [123456789, 987654321]  # Replace with actual role IDs
-special_channel_ids = [111222333, 444555666]  # Replace with actual channel IDs
+special_role_ids = [1108963523964448848, 1259144610366619740]  # Replace with actual role IDs
+special_channel_ids = [1109009867240382526]  # Replace with actual channel IDs
 
 user_ratings = {}
 
